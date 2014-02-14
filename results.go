@@ -1,4 +1,4 @@
-package main
+package wpt
 
 import (
 	"encoding/xml"
@@ -157,7 +157,7 @@ type WPTContainer struct {
 }
 
 func GetResult(url string, key string) (result WPTContainer) {
-	res, err := http.Get(wpturl + "xmlResult/" + key + "/?f=json")
+	res, err := http.Get(url + "xmlResult/" + key + "/?f=json")
 	robots, err := ioutil.ReadAll(res.Body)
 	res.Body.Close()
 	if err != nil {

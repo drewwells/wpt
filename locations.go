@@ -1,4 +1,4 @@
-package main
+package wpt
 
 import (
 	"encoding/json"

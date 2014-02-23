@@ -6,7 +6,6 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
-	"time"
 )
 
 type StatusData struct {
@@ -21,10 +20,9 @@ type StatusData struct {
 	StartTime       string `xml:"startTime"`
 	Elapsed         int32  `xml:"elapsed"`
 	CompleteTime    string `xml:"completeTime"`
-	PCompleteTime   time.Time
-	TestsCompleted  int32 `xml:"testsCompleted"`
-	FvRunsCompleted int32 `xml:"fvRunsCompleted"`
-	RvRunsCompleted int32 `xml:"rvRunsCompleted"`
+	TestsCompleted  int32  `xml:"testsCompleted"`
+	FvRunsCompleted int32  `xml:"fvRunsCompleted"`
+	RvRunsCompleted int32  `xml:"rvRunsCompleted"`
 }
 
 type Status struct {

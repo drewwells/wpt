@@ -159,6 +159,16 @@ func ProcessResult(response []byte) Result {
 	if err != nil {
 		log.Fatal(err)
 	}
+	result.TestId = jsonR.Data.TestId
+	result.Summary = jsonR.Data.Summary
+	result.Location = jsonR.Data.Location
+	result.Connectivity = jsonR.Data.Connectivity
+	result.BwDown = jsonR.Data.BwDown
+	result.BwUp = jsonR.Data.BwUp
+	result.Latency = jsonR.Data.Latency
+	result.Plr = jsonR.Data.Plr
+	result.Completed = jsonR.Data.Completed
+	result.SuccessfulFVRuns = jsonR.Data.SuccessfulFVRuns
 
 	for _, val := range jsonR.Data.Runs {
 		result.Runs = append(result.Runs, val)

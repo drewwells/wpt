@@ -1,19 +1,21 @@
 package wpt
 
-import "testing"
+import (
+	"fmt"
+	"testing"
+)
+import "github.com/kr/pretty"
 
 //const wpturl = "http://www.webpagetest.org/"
 
 //testResultNotFound
 //testResultSuccess
+const wpturl = "http://webpagetest.eng.wsm.local/"
 
 func TestGetResult(t *testing.T) {
-	const wpturl = "http://www.webpagetest.org/"
-	_ = ProcessResult([]byte(testResultSuccess))
 
 	response := ProcessResult([]byte(testResultSuccess))
-	if response.StatusCode != 200 {
-		t.Errorf("Invalid status code: %v", response.StatusCode)
-	}
+
+	fmt.Printf("%# v", pretty.Formatter(response.Runs))
 
 }

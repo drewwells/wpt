@@ -1,0 +1,58 @@
+{
+  "testStatusComplete": {
+    "statusCode": 200,
+    "statusText": "Test Complete",
+    "data": {
+      "statusCode": 200,
+      "statusText": "Test Complete",
+      "testId": "140301_DS_NTV",
+      "runs": 1,
+      "fvonly": 0,
+      "remote": false,
+      "testsExpected": 2,
+      "location": "Dulles_IE9",
+      "startTime": "03\/01\/14 23:13:45",
+      "elapsed": 612,
+      "completeTime": "03\/01\/14 23:14:11",
+      "testsCompleted": 2
+    }
+  },
+  "testStatusPending": {
+    "statusCode": 101,
+    "statusText": "Test Pending",
+    "data": {
+      "statusCode": 101,
+      "statusText": "Test Pending",
+      "testId": "140301_ES_P30",
+      "runs": 1,
+      "fvonly": 1,
+      "remote": false,
+      "testsExpected": 1,
+      "location": "Paris_wpt"
+    }
+  },
+  "testStatusRunning": {
+    "statusCode": 100,
+    "statusText": "Test Started 12 seconds ago",
+    "data": {
+      "statusCode": 100,
+      "statusText": "Test Started 12 seconds ago",
+      "testId": "140301_ES_P30",
+      "runs": 1,
+      "fvonly": 1,
+      "remote": false,
+      "testsExpected": 1,
+      "location": "Paris_wpt",
+      "startTime": "03\/01\/14 23:35:32",
+      "elapsed": 12
+    }
+  },
+  "testStatusNotFound": {
+    "statusCode": 401,
+    "statusText": "Test not found",
+    "data": {
+      "statusCode": 400,
+      "statusText": "Test not found"
+    }
+  }
+}

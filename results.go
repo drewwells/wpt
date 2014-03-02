@@ -159,6 +159,8 @@ func ProcessResult(response []byte) Result {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	//Lots of work to unfuck {"0":{},"1":{}} to [{},{}]
 	result.TestId = jsonR.Data.TestId
 	result.Summary = jsonR.Data.Summary
 	result.Location = jsonR.Data.Location
@@ -179,7 +181,8 @@ func ProcessResult(response []byte) Result {
 
 func GetResult(url string, key string) (result Result) {
 
-	res, err := http.Get(url + "jsonResult.php?test=" + key)
+	res, err := http.Get(url + "/jsonResult.php?test=" + key)
+	defer res.Body.Close()
 
 	if err != nil {
 		log.Fatal(err)
@@ -187,6 +190,6 @@ func GetResult(url string, key string) (result Result) {
 
 	bytes, err := ioutil.ReadAll(res.Body)
 	result = ProcessResult(bytes)
-	defer res.Body.Close()
+
 	return
 }

@@ -1,49 +1,62 @@
 package wpt
 
 import (
-	"encoding/xml"
-	"fmt"
+	"encoding/json"
 	"io/ioutil"
 	"log"
 	"net/http"
 )
 
 type StatusData struct {
-	StatusCode      int32  `xml:"statusCode"`
-	StatusText      string `xml:"statusText"`
-	TestId          string `xml:"testId"`
-	Runs            int32  `xml:"runs"`
-	Fvonly          int32  `xml:"fvonly"`
-	Remote          string `xml:"remote"`
-	TestsExpected   int32  `xml:"testsExpected"`
-	Location        string `xml:"location"`
-	StartTime       string `xml:"startTime"`
-	Elapsed         int32  `xml:"elapsed"`
-	CompleteTime    string `xml:"completeTime"`
-	TestsCompleted  int32  `xml:"testsCompleted"`
-	FvRunsCompleted int32  `xml:"fvRunsCompleted"`
-	RvRunsCompleted int32  `xml:"rvRunsCompleted"`
+	StatusCode      int32
+	StatusText      string
+	TestId          string
+	Runs            int32
+	Fvonly          int32
+	Remote          bool
+	TestsExpected   int32
+	Location        string
+	StartTime       string
+	Elapsed         int32
+	CompleteTime    string
+	TestsCompleted  int32
+	FvRunsCompleted int32
+	RvRunsCompleted int32
 }
 
 type Status struct {
-	StatusCode int32      `xml:"statusCode"`
-	StatusText string     `xml:"statusText"`
-	Data       StatusData `xml:"data"`
+	StatusCode int32
+	StatusText string
+	Data       StatusData
+}
+
+func ProcessStatus(response []byte, err error) (status Status) {
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	err = json.Unmarshal(response, &status)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return status
 }
 
 func GetStatus(url string, key string) (status Status) {
 
-	res, err := http.Get(url + "testStatus.php?f=xml&test=" + key)
+	res, err := http.Get(url + "/testStatus.php?test=" + key)
+	//res.Body.Close()
+
 	if err != nil {
 		log.Fatal(err)
 	}
-	robots, err := ioutil.ReadAll(res.Body)
-	res.Body.Close()
-	if err != nil {
-		log.Fatal(err)
-	}
-	fmt.Printf("%+v", string(robots))
-	_ = xml.Unmarshal(robots, &status)
+
+	bytes, err := ioutil.ReadAll(res.Body)
+
+	status = ProcessStatus(bytes, err)
 
 	//loc, _ := time.LoadLocation("America/Chicago")
 	//layout := "01/02/40 10:01:01"

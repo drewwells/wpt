@@ -35,7 +35,7 @@ type WPTResult struct {
 	Score_combine              int32              `json:"score_combine"`
 	Score_compress             int32              `json:"score_compress"`
 	Score_etags                int32              `json:"score_etags"`
-	Gzip_total                 int32              `json:"gzip_total"`
+	Gzip_total                 float64            `json:"gzip_total"`
 	Gzip_savings               int32              `json:"gzip_savings"`
 	Minify_total               int32              `json:"minify_total"`
 	Minify_savings             int32              `json:"minify_savings"`
@@ -65,7 +65,7 @@ type WPTResult struct {
 	FullyLoadedCPUms           float32            `json:"fullyLoadedCPUms"`
 	DocCPUpct                  float32            `json:"docCPUpct"`
 	FullyLoadedCPUpct          float32            `json:"fullyLoadedCPUpct"`
-	Date                       int32              `json:"date"`
+	Date                       float64            `json:"date"`
 	SpeedIndex                 int32              `json:"SpeedIndex"`
 	VisualComplete             int32              `json:"visualComplete"`
 	userTime                   map[string]float32 `json:"userTime"`
@@ -124,15 +124,15 @@ type WPTRun struct {
 }
 
 type WPTResultData struct {
-	TestId           string            `json:"testId"`
-	Summary          string            `json:"summary"`
-	Location         string            `json:"location"`
-	Connectivity     string            `json:"connectivity"`
-	BwDown           int32             `json:"bwDown"`
-	BwUp             int32             `json:"bwUp"`
-	Latency          int32             `json:"latency"`
-	Plr              string            //`json:"plr"`
-	Completed        int32             `json:"completed"`
+	TestId           string `json:"testId"`
+	Summary          string `json:"summary"`
+	Location         string `json:"location"`
+	Connectivity     string `json:"connectivity"`
+	BwDown           int32  `json:"bwDown"`
+	BwUp             int32  `json:"bwUp"`
+	Latency          int32  `json:"latency"`
+	Plr              string //`json:"plr"`
+	Completed        float64
 	Runs             map[string]WPTRun `json:"runs"`
 	SuccessfulFVRuns int32             `json:"successfulFVRuns"`
 	//Average           Views  `json:"average"`
@@ -143,6 +143,7 @@ type WPTResultData struct {
 type ResultJSON struct {
 	StatusCode int32         `json:"statusCode"`
 	StatusText string        `json:"statusText"`
+	Completed  float64       `json:"completed"`
 	Data       WPTResultData `json:"data"`
 }
 
@@ -151,10 +152,15 @@ type Result struct {
 	Runs []WPTRun
 }
 
-func ProcessResult(response []byte) Result {
+func ProcessResult(response []byte, err error) Result {
 	var jsonR ResultJSON
 	var result Result
-	err := json.Unmarshal(response, &jsonR)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	err = json.Unmarshal(response, &jsonR)
 
 	if err != nil {
 		log.Fatal(err)
@@ -188,8 +194,5 @@ func GetResult(url string, key string) (result Result) {
 		log.Fatal(err)
 	}
 
-	bytes, err := ioutil.ReadAll(res.Body)
-	result = ProcessResult(bytes)
-
-	return
+	return ProcessResult(ioutil.ReadAll(res.Body))
 }

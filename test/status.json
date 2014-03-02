@@ -48,7 +48,7 @@
     }
   },
   "testStatusNotFound": {
-    "statusCode": 401,
+    "statusCode": 400,
     "statusText": "Test not found",
     "data": {
       "statusCode": 400,

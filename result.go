@@ -3,7 +3,6 @@ package wpt
 import (
 	"encoding/json"
 	"io/ioutil"
-	"log"
 	"net/http"
 )
 
@@ -176,16 +175,16 @@ type ResultFuckedJSON struct {
 type Result struct {
 	StatusCode int32
 	StatusText string
-	Data       WPTResultCleanData
+	Data       WPTResultCleanData `json:"data"`
 }
 
-func ProcessResult(response []byte, err error) Result {
+func ProcessResult(response []byte, err error) (Result, error) {
 	var jsonR ResultJSON
 	var result Result
 	var jsonFR ResultFuckedJSON
 
 	if err != nil {
-		log.Fatal(err)
+		return result, err
 	}
 
 	err = json.Unmarshal(response, &jsonR)
@@ -214,17 +213,17 @@ func ProcessResult(response []byte, err error) Result {
 		result.Data.Runs = append(result.Data.Runs, val)
 	}
 
-	return result
+	return result, err
 }
 
-func GetResult(url string, key string) (result Result) {
-
+func GetResult(url string, key string) (Result, error) {
+	var result Result
 	res, err := http.Get(url + "/jsonResult.php?test=" + key)
-	defer res.Body.Close()
 
 	if err != nil {
-		log.Fatal(err)
+		return result, err
 	}
 
+	defer res.Body.Close()
 	return ProcessResult(ioutil.ReadAll(res.Body))
 }

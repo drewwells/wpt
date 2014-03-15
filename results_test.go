@@ -2,15 +2,36 @@ package wpt
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
+	"regexp"
 	"testing"
 )
 
 //import "github.com/kr/pretty"
 
-const wpturl = "http://www.webpagetest.org"
+//const wpturl = "http://www.webpagetest.org"
+const wpturl = "http://webpagetest.eng.wsm.local"
 
 func TestGetResult(t *testing.T) {
+	//Disable to make unit testing faster
+	return
+	_, err := GetResult("http://notaurl", "140314_7Q_A")
+
+	if err == nil {
+		t.Errorf("No error thrown for non-existant url")
+		return
+	}
+	re, _ := regexp.Compile(`dial tcp`)
+
+	if re.MatchString(fmt.Sprintf("%v", err)) != true {
+		t.Errorf("%v", err)
+	}
+
+}
+
+func TestProcessResult(t *testing.T) {
+
 	t.Log("Processing Successful Result")
 
 	var testData map[string]interface{}
@@ -24,7 +45,7 @@ func TestGetResult(t *testing.T) {
 	_ = json.Unmarshal(bytes, &testData)
 
 	//testResultWaiting
-	result := ProcessResult(json.Marshal(testData["testResultWaiting"]))
+	result, _ := ProcessResult(json.Marshal(testData["testResultWaiting"]))
 
 	if result.StatusCode != 101 {
 		t.Errorf("StatusCode not 101")
@@ -35,7 +56,7 @@ func TestGetResult(t *testing.T) {
 	}
 
 	//testResultFront
-	result = ProcessResult(json.Marshal(testData["testResultFront"]))
+	result, _ = ProcessResult(json.Marshal(testData["testResultFront"]))
 
 	if result.StatusCode != 101 {
 		t.Errorf("StatusCode not 101")
@@ -47,7 +68,7 @@ func TestGetResult(t *testing.T) {
 	}
 
 	//testResultRunning
-	result = ProcessResult(json.Marshal(testData["testResultRunning"]))
+	result, _ = ProcessResult(json.Marshal(testData["testResultRunning"]))
 
 	if result.StatusCode != 100 {
 		t.Errorf("StatusCode not 100")
@@ -59,7 +80,7 @@ func TestGetResult(t *testing.T) {
 	}
 
 	//testResultNotFound
-	result = ProcessResult(json.Marshal(testData["testResultNotFound"]))
+	result, _ = ProcessResult(json.Marshal(testData["testResultNotFound"]))
 
 	if result.StatusCode != 400 {
 		t.Errorf("StatusCode not 400")
@@ -71,7 +92,7 @@ func TestGetResult(t *testing.T) {
 	}
 
 	//testResultSuccess
-	result = ProcessResult(json.Marshal(testData["testResultSuccess"]))
+	result, _ = ProcessResult(json.Marshal(testData["testResultSuccess"]))
 
 	if result.Data.Url != "http://www.123greetings.com/birthday/happy_birthday/birthday162.html" {
 		t.Errorf("Invalid URL")

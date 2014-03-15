@@ -24,23 +24,34 @@ func TestGetResult(t *testing.T) {
 	_ = json.Unmarshal(bytes, &testData)
 
 	//testResultNotFound
+	result := ProcessResult(json.Marshal(testData["testResultNotFound"]))
+
+	if result.StatusCode != 400 {
+		t.Errorf("StatusCode not 400")
+	}
+
+	if result.StatusText != "Test not found" {
+		t.Errorf("Improper parsing of status text")
+	}
+
 	//testResultWaiting
 	//testResultFront
 	//testResultRunning
 
-	result := ProcessResult(json.Marshal(testData["testResultSuccess"]))
+	//testResultSuccess
+	/*result = ProcessResult(json.Marshal(testData["testResultSuccess"]))
 
-	if result.Summary !=
+	if result.Data.Summary !=
 		"http://www.webpagetest.org/results.php?test=140222_ZC_4Y9" {
 		t.Errorf("Error processing Result")
 	}
 
-	if result.Runs[0].FirstView.TTFB != 690 {
+	if result.Data.Runs[0].FirstView.TTFB != 690 {
 		t.Errorf("TTFB in for first Run invalid")
 	}
 
-	if result.Completed != 1393047807 {
+	if result.Data.Completed != 1393047807 {
 		t.Errorf("Completed timestamp invalid")
-	}
+	}*/
 
 }

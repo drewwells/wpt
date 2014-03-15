@@ -123,7 +123,9 @@ type WPTRun struct {
 	Id int32 `json:"id"`
 }
 
-type WPTResultData struct {
+type WPTBaseResultData struct {
+	StatusCode       int32
+	StatusText       string
 	TestId           string `json:"testId"`
 	Summary          string `json:"summary"`
 	Location         string `json:"location"`
@@ -133,11 +135,22 @@ type WPTResultData struct {
 	Latency          int32  `json:"latency"`
 	Plr              string //`json:"plr"`
 	Completed        float64
-	Runs             map[string]WPTRun `json:"runs"`
-	SuccessfulFVRuns int32             `json:"successfulFVRuns"`
+	SuccessfulFVRuns int32 `json:"successfulFVRuns"`
 	//Average           Views  `json:"average"`
 	//Median            Views  `json:"median"`
 	//StandardDeviation Views  `json:"standardDeviation"`
+}
+
+type WPTResultData struct {
+	WPTBaseResultData
+	StatusCode int32
+	StatusText string
+	Runs       map[string]WPTRun `json:"runs"`
+}
+
+type WPTResultCleanData struct {
+	WPTBaseResultData
+	Runs []WPTRun
 }
 
 type ResultJSON struct {
@@ -148,8 +161,10 @@ type ResultJSON struct {
 }
 
 type Result struct {
-	WPTResultData
-	Runs []WPTRun
+	ResultJSON
+	Data       WPTResultCleanData
+	StatusCode int32
+	StatusText string
 }
 
 func ProcessResult(response []byte, err error) Result {
@@ -167,19 +182,21 @@ func ProcessResult(response []byte, err error) Result {
 	}
 
 	//Lots of work to unfuck {"0":{},"1":{}} to [{},{}]
-	result.TestId = jsonR.Data.TestId
-	result.Summary = jsonR.Data.Summary
-	result.Location = jsonR.Data.Location
-	result.Connectivity = jsonR.Data.Connectivity
-	result.BwDown = jsonR.Data.BwDown
-	result.BwUp = jsonR.Data.BwUp
-	result.Latency = jsonR.Data.Latency
-	result.Plr = jsonR.Data.Plr
-	result.Completed = jsonR.Data.Completed
-	result.SuccessfulFVRuns = jsonR.Data.SuccessfulFVRuns
+	result.StatusCode = jsonR.Data.StatusCode
+	result.StatusText = jsonR.Data.StatusText
+	result.Data.TestId = jsonR.Data.TestId
+	result.Data.Summary = jsonR.Data.Summary
+	result.Data.Location = jsonR.Data.Location
+	result.Data.Connectivity = jsonR.Data.Connectivity
+	result.Data.BwDown = jsonR.Data.BwDown
+	result.Data.BwUp = jsonR.Data.BwUp
+	result.Data.Latency = jsonR.Data.Latency
+	result.Data.Plr = jsonR.Data.Plr
+	result.Data.Completed = jsonR.Data.Completed
+	result.Data.SuccessfulFVRuns = jsonR.Data.SuccessfulFVRuns
 
 	for _, val := range jsonR.Data.Runs {
-		result.Runs = append(result.Runs, val)
+		result.Data.Runs = append(result.Data.Runs, val)
 	}
 
 	return result

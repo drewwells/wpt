@@ -57,6 +57,7 @@ func TestGetResult(t *testing.T) {
 		t.Errorf("Improper parsing of waiting of running... text")
 		t.Errorf("Found: " + result.StatusText)
 	}
+
 	//testResultNotFound
 	result = ProcessResult(json.Marshal(testData["testResultNotFound"]))
 
@@ -71,6 +72,11 @@ func TestGetResult(t *testing.T) {
 
 	//testResultSuccess
 	result = ProcessResult(json.Marshal(testData["testResultSuccess"]))
+
+	if result.Data.Url != "http://www.123greetings.com/birthday/happy_birthday/birthday162.html" {
+		t.Errorf("Invalid URL")
+		t.Errorf("Found: " + result.Data.Url)
+	}
 
 	if result.Data.Summary !=
 		"http://www.webpagetest.org/results.php?test=140222_ZC_4Y9" {

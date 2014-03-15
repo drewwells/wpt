@@ -126,7 +126,8 @@ type WPTRun struct {
 type WPTBaseResultData struct {
 	StatusCode       int32
 	StatusText       string
-	TestId           string `json:"testId"`
+	Url              string `json:"url"`
+	TestId           string `json:"id"`
 	Summary          string `json:"summary"`
 	Location         string `json:"location"`
 	Connectivity     string `json:"connectivity"`
@@ -199,6 +200,7 @@ func ProcessResult(response []byte, err error) Result {
 		result.StatusText = jsonR.Data.StatusText
 		result.Data.TestId = jsonR.Data.TestId
 		result.Data.Summary = jsonR.Data.Summary
+		result.Data.Url = jsonR.Data.Url
 		result.Data.Location = jsonR.Data.Location
 		result.Data.Connectivity = jsonR.Data.Connectivity
 		result.Data.BwDown = jsonR.Data.BwDown

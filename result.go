@@ -153,7 +153,7 @@ type WPTResultFData struct {
 
 type WPTResultCleanData struct {
 	WPTBaseResultData
-	Runs []WPTRun
+	Run []WPTRun
 }
 
 type ResultJSON struct {
@@ -208,7 +208,7 @@ func ProcessResult(response []byte, err error) (Result, error) {
 		result.Data.SuccessfulFVRuns = jsonR.Data.SuccessfulFVRuns
 	}
 	for _, val := range jsonR.Data.Runs {
-		result.Data.Runs = append(result.Data.Runs, val)
+		result.Data.Run = append(result.Data.Run, val)
 	}
 
 	return result, err

@@ -104,7 +104,7 @@ func TestProcessResult(t *testing.T) {
 		t.Errorf("Error processing Result")
 	}
 
-	if result.Data.Runs[0].FirstView.TTFB != 690 {
+	if result.Data.Run[0].FirstView.TTFB != 690 {
 		t.Errorf("TTFB in for first Run invalid")
 	}
 

@@ -125,17 +125,17 @@ type WPTRun struct {
 }
 
 type WPTBaseResultData struct {
-	Url              string `json:"url"`
-	TestId           string `json:"testId"`
-	Summary          string `json:"summary"`
-	Location         string `json:"location"`
-	Connectivity     string `json:"connectivity"`
-	BwDown           int32  `json:"bwDown"`
-	BwUp             int32  `json:"bwUp"`
-	Latency          int32  `json:"latency"`
-	Plr              string //`json:"plr"`
-	Completed        float64
-	SuccessfulFVRuns int32 `json:"successfulFVRuns"`
+	Url              string  `json:"url"`
+	TestId           string  `json:"testId"`
+	Summary          string  `json:"summary"`
+	Location         string  `json:"location"`
+	Connectivity     string  `json:"connectivity"`
+	BwDown           int32   `json:"bwDown"`
+	BwUp             int32   `json:"bwUp"`
+	Latency          int32   `json:"latency"`
+	Plr              string  `json:"plr"`
+	Completed        float64 `json:"completed"`
+	SuccessfulFVRuns int32   `json:"successfulFVRuns"`
 	//Average           Views  `json:"average"`
 	//Median            Views  `json:"median"`
 	//StandardDeviation Views  `json:"standardDeviation"`
@@ -150,12 +150,13 @@ type WPTResultData struct {
 
 type WPTResultFData struct {
 	//Run int32 `json:"run"`
+	TestId string `json:"id"`
 	WPTResultData
 }
 
 type WPTResultCleanData struct {
 	WPTBaseResultData
-	Runs []WPTRun
+	Runs []WPTRun `json:"runs"`
 }
 
 type ResultJSON struct {

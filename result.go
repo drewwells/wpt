@@ -87,7 +87,7 @@ type Thumbnails struct {
 }
 
 type Images struct {
-	Thumbnails
+	Thumbnails     `bson:",inline"`
 	ConnectionView string `json:"connectionView"`
 }
 
@@ -105,7 +105,7 @@ type VideoFrame struct {
 }
 
 type WPTResultSet struct {
-	WPTResult
+	WPTResult   `bson:",inline"`
 	Pages       Pages        `json:"pages"`
 	Thumbnails  Thumbnails   `json:"thumbnails"`
 	Images      Images       `json:"images"`
@@ -119,16 +119,17 @@ type Views struct {
 }
 
 type WPTRun struct {
-	FirstView WPTResultSet `json:"firstView"`
+	FirstView WPTResultSet `json:"firstView" bson:"firstView"`
 	//RepeatView WPTResultSet `json:"repeatView"`
 	Id int32 `json:"id"`
 }
 
 type WPTBaseResultData struct {
-	Url              string  `json:"url"`
-	TestId           string  `json:"testId"`
+	Url              string  `json:"url" bson:"testUrl"`
+	TestId           string  `json:"testId" bson:"testId"`
 	Summary          string  `json:"summary"`
 	Location         string  `json:"location"`
+	Label            string  `json:"label" bson:"label"`
 	Connectivity     string  `json:"connectivity"`
 	BwDown           int32   `json:"bwDown"`
 	BwUp             int32   `json:"bwUp"`
@@ -141,36 +142,32 @@ type WPTBaseResultData struct {
 	//StandardDeviation Views  `json:"standardDeviation"`
 }
 
-type WPTResultData struct {
+type WPTResultRawData struct {
 	WPTBaseResultData
+	TestId     string `json:"id"`
 	StatusCode int32
 	StatusText string
 	Runs       map[string]WPTRun `json:"runs"`
 }
 
-type WPTResultFData struct {
-	//Run int32 `json:"run"`
-	TestId string `json:"id"`
-	WPTResultData
-}
-
 type WPTResultCleanData struct {
-	WPTBaseResultData
-	Runs []WPTRun `json:"runs"`
+	WPTBaseResultData `bson:",inline"`
+	Runs              []WPTRun `json:"runs" bson:"run"`
 }
 
 type ResultJSON struct {
-	StatusCode int32          `json:"statusCode"`
-	StatusText string         `json:"statusText"`
-	Completed  float64        `json:"completed"`
-	Data       WPTResultFData `json:"data"`
+	StatusCode int32            `json:"statusCode"`
+	StatusText string           `json:"statusText"`
+	Completed  float64          `json:"completed"`
+	Data       WPTResultRawData `json:"data" bson:"data"`
 }
 
+//Special struct to handle unstructured wpt responses
 type ResultFJSON struct {
 	StatusCode int32   `json:"statusCode"`
 	StatusText string  `json:"statusText"`
 	Completed  float64 `json:"completed"`
-	Data       WPTResultFData
+	Data       WPTResultRawData
 }
 
 type Result struct {
@@ -180,9 +177,11 @@ type Result struct {
 }
 
 func ProcessResult(response []byte, err error) (Result, error) {
-	var jsonR ResultJSON
-	var result Result
-	var jsonFR ResultFJSON
+	var (
+		jsonR  ResultJSON
+		result Result
+		jsonFR ResultFJSON
+	)
 
 	if err != nil {
 		return result, err
@@ -200,6 +199,7 @@ func ProcessResult(response []byte, err error) (Result, error) {
 		result.StatusText = jsonR.StatusText
 		result.Data.TestId = jsonR.Data.TestId
 		result.Data.Summary = jsonR.Data.Summary
+		result.Data.Label = jsonR.Data.Label
 		result.Data.Url = jsonR.Data.Url
 		result.Data.Location = jsonR.Data.Location
 		result.Data.Connectivity = jsonR.Data.Connectivity
@@ -209,9 +209,10 @@ func ProcessResult(response []byte, err error) (Result, error) {
 		result.Data.Plr = jsonR.Data.Plr
 		result.Data.Completed = jsonR.Data.Completed
 		result.Data.SuccessfulFVRuns = jsonR.Data.SuccessfulFVRuns
-	}
-	for _, val := range jsonR.Data.Runs {
-		result.Data.Runs = append(result.Data.Runs, val)
+
+		for _, val := range jsonR.Data.Runs {
+			result.Data.Runs = append(result.Data.Runs, val)
+		}
 	}
 
 	return result, err

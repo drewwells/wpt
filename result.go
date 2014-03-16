@@ -123,8 +123,6 @@ type WPTRun struct {
 }
 
 type WPTBaseResultData struct {
-	StatusCode       int32
-	StatusText       string
 	Url              string `json:"url"`
 	TestId           string `json:"id"`
 	Summary          string `json:"summary"`
@@ -148,7 +146,7 @@ type WPTResultData struct {
 	Runs       map[string]WPTRun `json:"runs"`
 }
 
-type WPTResultFuckedData struct {
+type WPTResultFData struct {
 	Runs int32 `json:"runs"`
 	WPTResultData
 }
@@ -165,11 +163,11 @@ type ResultJSON struct {
 	Data       WPTResultData `json:"data"`
 }
 
-type ResultFuckedJSON struct {
+type ResultFJSON struct {
 	StatusCode int32   `json:"statusCode"`
 	StatusText string  `json:"statusText"`
 	Completed  float64 `json:"completed"`
-	Data       WPTResultFuckedData
+	Data       WPTResultFData
 }
 
 type Result struct {
@@ -181,7 +179,7 @@ type Result struct {
 func ProcessResult(response []byte, err error) (Result, error) {
 	var jsonR ResultJSON
 	var result Result
-	var jsonFR ResultFuckedJSON
+	var jsonFR ResultFJSON
 
 	if err != nil {
 		return result, err
@@ -194,9 +192,9 @@ func ProcessResult(response []byte, err error) (Result, error) {
 		result.StatusCode = jsonFR.StatusCode
 		result.StatusText = jsonFR.StatusText
 	} else {
-		//Lots of work to unfuck {"0":{},"1":{}} to [{},{}]
-		result.StatusCode = jsonR.Data.StatusCode
-		result.StatusText = jsonR.Data.StatusText
+		//Lots of work to convert {"0":{},"1":{}} to [{},{}]
+		result.StatusCode = jsonR.StatusCode
+		result.StatusText = jsonR.StatusText
 		result.Data.TestId = jsonR.Data.TestId
 		result.Data.Summary = jsonR.Data.Summary
 		result.Data.Url = jsonR.Data.Url

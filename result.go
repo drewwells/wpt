@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
+
+	//"github.com/kr/pretty"
 )
 
 type WPTResult struct {
@@ -124,7 +126,7 @@ type WPTRun struct {
 
 type WPTBaseResultData struct {
 	Url              string `json:"url"`
-	TestId           string `json:"id"`
+	TestId           string `json:"testId"`
 	Summary          string `json:"summary"`
 	Location         string `json:"location"`
 	Connectivity     string `json:"connectivity"`
@@ -147,20 +149,20 @@ type WPTResultData struct {
 }
 
 type WPTResultFData struct {
-	Runs int32 `json:"runs"`
+	//Run int32 `json:"run"`
 	WPTResultData
 }
 
 type WPTResultCleanData struct {
 	WPTBaseResultData
-	Run []WPTRun
+	Runs []WPTRun
 }
 
 type ResultJSON struct {
-	StatusCode int32         `json:"statusCode"`
-	StatusText string        `json:"statusText"`
-	Completed  float64       `json:"completed"`
-	Data       WPTResultData `json:"data"`
+	StatusCode int32          `json:"statusCode"`
+	StatusText string         `json:"statusText"`
+	Completed  float64        `json:"completed"`
+	Data       WPTResultFData `json:"data"`
 }
 
 type ResultFJSON struct {
@@ -208,18 +210,18 @@ func ProcessResult(response []byte, err error) (Result, error) {
 		result.Data.SuccessfulFVRuns = jsonR.Data.SuccessfulFVRuns
 	}
 	for _, val := range jsonR.Data.Runs {
-		result.Data.Run = append(result.Data.Run, val)
+		result.Data.Runs = append(result.Data.Runs, val)
 	}
 
 	return result, err
 }
 
 func GetResult(url string, key string) (Result, error) {
-	var result Result
+
 	res, err := http.Get(url + "/jsonResult.php?test=" + key)
 
 	if err != nil {
-		return result, err
+		return Result{}, err
 	}
 
 	defer res.Body.Close()

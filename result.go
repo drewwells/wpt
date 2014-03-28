@@ -134,7 +134,7 @@ type WPTBaseResultData struct {
 	BwDown           int32   `json:"bwDown"`
 	BwUp             int32   `json:"bwUp"`
 	Latency          int32   `json:"latency"`
-	Plr              string  `json:"plr"`
+	Plr              int32   `json:"plr"`
 	Completed        float64 `json:"completed"`
 	SuccessfulFVRuns int32   `json:"successfulFVRuns"`
 	//Average           Views  `json:"average"`
@@ -152,7 +152,7 @@ type WPTResultRawData struct {
 
 type WPTResultCleanData struct {
 	WPTBaseResultData `bson:",inline"`
-	Runs              []WPTRun `json:"runs" bson:"run"`
+	Runs              []WPTRun `json:"runs" bson:"runs"`
 }
 
 type ResultJSON struct {

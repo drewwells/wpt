@@ -119,14 +119,14 @@ type Views struct {
 }
 
 type WPTRun struct {
-	FirstView WPTResultSet `json:"firstView" bson:"firstView"`
+	FirstView WPTResultSet `json:"firstView" bson:"firstview"`
 	//RepeatView WPTResultSet `json:"repeatView"`
 	Id int32 `json:"id"`
 }
 
 type WPTBaseResultData struct {
-	Url              string  `json:"url" bson:"testUrl"`
-	TestId           string  `json:"testId" bson:"testId"`
+	Url              string  `json:"url" bson:"testurl"`
+	TestId           string  `json:"testId" bson:"testid"`
 	Summary          string  `json:"summary"`
 	Location         string  `json:"location"`
 	Label            string  `json:"label" bson:"label"`
@@ -134,7 +134,7 @@ type WPTBaseResultData struct {
 	BwDown           int32   `json:"bwDown"`
 	BwUp             int32   `json:"bwUp"`
 	Latency          int32   `json:"latency"`
-	Plr              int32   `json:"plr"`
+	Plr              int32   `json:"plr,string"`
 	Completed        float64 `json:"completed"`
 	SuccessfulFVRuns int32   `json:"successfulFVRuns"`
 	//Average           Views  `json:"average"`
@@ -150,16 +150,16 @@ type WPTResultRawData struct {
 	Runs       map[string]WPTRun `json:"runs"`
 }
 
-type WPTResultCleanData struct {
-	WPTBaseResultData `bson:",inline"`
-	Runs              []WPTRun `json:"runs" bson:"runs"`
-}
-
 type ResultJSON struct {
 	StatusCode int32            `json:"statusCode"`
 	StatusText string           `json:"statusText"`
 	Completed  float64          `json:"completed"`
 	Data       WPTResultRawData `json:"data" bson:"data"`
+}
+
+type WPTResultCleanData struct {
+	WPTBaseResultData `bson:",inline"`
+	Runs              []WPTRun `json:"runs" bson:"runs"`
 }
 
 //Special struct to handle unstructured wpt responses

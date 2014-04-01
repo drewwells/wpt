@@ -9,10 +9,12 @@ import (
 )
 
 type WPTResult struct {
-	Run                        int32         `json:"run"`
-	URL                        string        `json:"URL"`
-	LoadTime                   int32         `json:"loadTime"`
-	TTFB                       int32         `json:"TTFB"`
+	Run                        int32  `json:"run"`
+	URL                        string `json:"URL"`
+	LoadTime                   int32  `json:"loadTime"`
+	TTFB                       int32  `json:"TTFB"`
+	BytesIn                    int32
+	BytesInDoc                 int32
 	BytesOut                   int32         `json:"bytesOut"`
 	BytesOutDoc                int32         `json:"bytesOutDoc"`
 	Connections                int32         `json:"connections"`
@@ -69,10 +71,10 @@ type WPTResult struct {
 	Date                       float64       `json:"date"`
 	SpeedIndex                 int32         `json:"SpeedIndex"`
 	VisualComplete             int32         `json:"visualComplete"`
-	UserTimeFirstOffer         int32         `json:"userTime.first_offer"`
-	UserTimeLastOffer          int32         `json:"userTime.last_offer"`
-	UserTimeOffers             int32         `json:"userTime.offers"`
-	UserTimeJS                 int32         `json:"userTime.js"`
+	UserTimeFirstOffer         int32         `json:"userTime.first_offer" bson:"first_offer"`
+	UserTimeLastOffer          int32         `json:"userTime.last_offer" bson:"last_offer"`
+	UserTimeOffers             int32         `json:"userTime.offers" bson:"offers"`
+	UserTimeJS                 int32         `json:"userTime.js" bson:"js"`
 }
 
 type Pages struct {

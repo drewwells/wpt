@@ -3,7 +3,9 @@ package wpt
 import (
 	"encoding/json"
 	"io/ioutil"
+	"log"
 	"net/http"
+	"strconv"
 
 	//"github.com/kr/pretty"
 )
@@ -139,7 +141,6 @@ type WPTBaseResultData struct {
 	BwDown           int32   `json:"bwDown"`
 	BwUp             int32   `json:"bwUp"`
 	Latency          int32   `json:"latency"`
-	Plr              int32   `json:"plr,string"`
 	Completed        float64 `json:"completed"`
 	SuccessfulFVRuns int32   `json:"successfulFVRuns"`
 	//Average           Views  `json:"average"`
@@ -152,6 +153,7 @@ type WPTResultRawData struct {
 	TestId     string `json:"id"`
 	StatusCode int32
 	StatusText string
+	Plr        interface{}       `json:"plr"`
 	Runs       map[string]WPTRun `json:"runs"`
 }
 
@@ -164,6 +166,7 @@ type ResultJSON struct {
 
 type WPTResultCleanData struct {
 	WPTBaseResultData `bson:",inline"`
+	Plr               int32    `bson:",minsize"`
 	Runs              []WPTRun `json:"runs" bson:"runs"`
 }
 
@@ -211,7 +214,19 @@ func ProcessResult(response []byte, err error) (Result, error) {
 		result.Data.BwDown = jsonR.Data.BwDown
 		result.Data.BwUp = jsonR.Data.BwUp
 		result.Data.Latency = jsonR.Data.Latency
-		result.Data.Plr = jsonR.Data.Plr
+
+		//iOS app sends int, but browsers send string
+		switch v := jsonR.Data.Plr.(type) {
+		case string:
+			inf, _ := strconv.ParseInt(v, 10, 32)
+			result.Data.Plr = int32(inf)
+		case int64:
+			result.Data.Plr = int32(v)
+		case float64:
+			result.Data.Plr = int32(v)
+		default:
+			log.Printf("Failed to convert: %v", v)
+		}
 		result.Data.Completed = jsonR.Data.Completed
 		result.Data.SuccessfulFVRuns = jsonR.Data.SuccessfulFVRuns
 

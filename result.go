@@ -5,8 +5,12 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"regexp"
 	"strconv"
+	"strings"
 
+	"labix.org/v2/mgo/bson"
+	//"labix.org/v2/mgo/bson"
 	//"github.com/kr/pretty"
 )
 
@@ -17,67 +21,83 @@ type WPTResult struct {
 	TTFB                       int32   `json:"TTFB"`
 	BytesIn                    float32 `json:"bytesIn"`
 	BytesInDoc                 int32
-	BytesOut                   int32         `json:"bytesOut"`
-	BytesOutDoc                int32         `json:"bytesOutDoc"`
-	Connections                int32         `json:"connections"`
-	Requests                   []interface{} `json:"requests"`
-	RequestsDoc                int32         `json:"requestsDoc"`
-	Responses_200              int32         `json:"responses_200"`
-	Responses_404              int32         `json:"responses_404"`
-	Responses_other            int32         `json:"responses_other"`
-	Result                     int32         `json:"result"`
-	Render                     int32         `json:"render"`
-	FullyLoaded                int32         `json:"fullyLoaded"`
-	Cached                     int32         `json:"cached"`
-	DocTime                    int32         `json:"docTime"`
-	DomTime                    int32         `json:"domTime"`
-	Score_cache                int32         `json:"score_cache"`
-	Score_cdn                  int32         `json:"score_cdn"`
-	Score_gzip                 int32         `json:"score_gzip"`
-	Score_cookies              int32         `json:"score_cookies"`
-	Score_keep_alive           int32         `json:"score_keep-alive"`
-	Score_minify               int32         `json:"score_minify"`
-	Score_combine              int32         `json:"score_combine"`
-	Score_compress             int32         `json:"score_compress"`
-	Score_etags                int32         `json:"score_etags"`
-	Gzip_total                 float64       `json:"gzip_total"`
-	Gzip_savings               int32         `json:"gzip_savings"`
-	Minify_total               int32         `json:"minify_total"`
-	Minify_savings             int32         `json:"minify_savings"`
-	Image_total                int32         `json:"image_total"`
-	Image_savings              int32         `json:"image_savings"`
-	Optimization_checked       int32         `json:"optimization_checked"`
-	Aft                        int32         `json:"aft"`
-	DomElements                int32         `json:"domElements"`
-	PageSpeedVersion           float32       `json:"pageSpeedVersion,string"`
-	Title                      string        `json:"title"`
-	TitleTime                  int32         `json:"titleTime"`
-	LoadEventStart             int32         `json:"loadEventStart"`
-	LoadEventEnd               int32         `json:"loadEventEnd"`
-	DomContentLoadedEventStart int32         `json:"domContentLoadedEventStart"`
-	DomContentLoadedEventEnd   int32         `json:"domContentLoadedEventEnd"`
-	LastVisualChange           int32         `json:"lastVisualChange"`
-	Browser_name               string        `json:"browser_name"`
-	Browser_version            string        `json:"browser_version"`
-	Server_count               int32         `json:"server_count"`
-	Server_rtt                 int32         `json:"server_rtt"`
-	Base_page_cdn              string        `json:"base_page_cdn"`
-	Adult_site                 int32         `json:"adult_site"`
-	Fixed_viewport             int32         `json:"fixed_viewport"`
-	Score_progressive_jpeg     int32         `json:"score_progressive_jpeg"`
-	FirstPaint                 int32         `json:"firstPaint"`
-	DocCPUms                   float32       `json:"docCPUms"`
-	FullyLoadedCPUms           float32       `json:"fullyLoadedCPUms"`
-	DocCPUpct                  float32       `json:"docCPUpct"`
-	FullyLoadedCPUpct          float32       `json:"fullyLoadedCPUpct"`
-	Date                       float64       `json:"date"`
-	SpeedIndex                 int32         `json:"SpeedIndex"`
-	VisualComplete             int32         `json:"visualComplete"`
-	/*UserTimeFirstOffer         int32                  `json:"userTime.first_offer" bson:"first_offer"`
-	UserTimeLastOffer          int32                  `json:"userTime.last_offer" bson:"last_offer"`
-	UserTimeOffers             int32                  `json:"userTime.offers" bson:"offers"`
-	UserTimeJS                 int32                  `json:"userTime.js" bson:"js"`
-	Extra map[string]interface{} `json:"-" bson:",inline"`*/
+	BytesOut                   int32                  `json:"bytesOut"`
+	BytesOutDoc                int32                  `json:"bytesOutDoc"`
+	Connections                int32                  `json:"connections"`
+	Requests                   []interface{}          `json:"requests"`
+	RequestsDoc                int32                  `json:"requestsDoc"`
+	Responses_200              int32                  `json:"responses_200"`
+	Responses_404              int32                  `json:"responses_404"`
+	Responses_other            int32                  `json:"responses_other"`
+	Result                     int32                  `json:"result"`
+	Render                     int32                  `json:"render"`
+	FullyLoaded                int32                  `json:"fullyLoaded"`
+	Cached                     int32                  `json:"cached"`
+	DocTime                    int32                  `json:"docTime"`
+	DomTime                    int32                  `json:"domTime"`
+	Score_cache                int32                  `json:"score_cache"`
+	Score_cdn                  int32                  `json:"score_cdn"`
+	Score_gzip                 int32                  `json:"score_gzip"`
+	Score_cookies              int32                  `json:"score_cookies"`
+	Score_keep_alive           int32                  `json:"score_keep-alive"`
+	Score_minify               int32                  `json:"score_minify"`
+	Score_combine              int32                  `json:"score_combine"`
+	Score_compress             int32                  `json:"score_compress"`
+	Score_etags                int32                  `json:"score_etags"`
+	Gzip_total                 float64                `json:"gzip_total"`
+	Gzip_savings               int32                  `json:"gzip_savings"`
+	Minify_total               int32                  `json:"minify_total"`
+	Minify_savings             int32                  `json:"minify_savings"`
+	Image_total                int32                  `json:"image_total"`
+	Image_savings              int32                  `json:"image_savings"`
+	Optimization_checked       int32                  `json:"optimization_checked"`
+	Aft                        int32                  `json:"aft"`
+	DomElements                int32                  `json:"domElements"`
+	PageSpeedVersion           float32                `json:"pageSpeedVersion,string"`
+	Title                      string                 `json:"title"`
+	TitleTime                  int32                  `json:"titleTime"`
+	LoadEventStart             int32                  `json:"loadEventStart"`
+	LoadEventEnd               int32                  `json:"loadEventEnd"`
+	DomContentLoadedEventStart int32                  `json:"domContentLoadedEventStart"`
+	DomContentLoadedEventEnd   int32                  `json:"domContentLoadedEventEnd"`
+	LastVisualChange           int32                  `json:"lastVisualChange"`
+	Browser_name               string                 `json:"browser_name"`
+	Browser_version            string                 `json:"browser_version"`
+	Server_count               int32                  `json:"server_count"`
+	Server_rtt                 int32                  `json:"server_rtt"`
+	Base_page_cdn              string                 `json:"base_page_cdn"`
+	Adult_site                 int32                  `json:"adult_site"`
+	Fixed_viewport             int32                  `json:"fixed_viewport"`
+	Score_progressive_jpeg     int32                  `json:"score_progressive_jpeg"`
+	FirstPaint                 int32                  `json:"firstPaint"`
+	DocCPUms                   float32                `json:"docCPUms"`
+	FullyLoadedCPUms           float32                `json:"fullyLoadedCPUms"`
+	DocCPUpct                  float32                `json:"docCPUpct"`
+	FullyLoadedCPUpct          float32                `json:"fullyLoadedCPUpct"`
+	Date                       float64                `json:"date"`
+	SpeedIndex                 int32                  `json:"SpeedIndex"`
+	VisualComplete             int32                  `json:"visualComplete"`
+	UserTiming                 map[string]int         `json:"-" bson:"usertime"`
+	Extra                      map[string]interface{} `json:"-" bson:"_notincluded,inline"`
+}
+
+func (t *WPTResult) MarshalJSON() ([]byte, error) {
+	var j interface{}
+	b, _ := bson.Marshal(t)
+	bson.Unmarshal(b, &j)
+	return json.Marshal(&j)
+}
+
+func (t *WPTResult) UnmarshalJSON(b []byte) error {
+	var j map[string]interface{}
+	json.Unmarshal(b, &j)
+	//Delete erroneous data value
+	delete(j, "userTime")
+	for key, val := range j {
+		j[strings.ToLower(key)] = val
+	}
+	b, _ = bson.Marshal(&j)
+	return bson.Unmarshal(b, t)
 }
 
 type Pages struct {
@@ -127,7 +147,7 @@ type Views struct {
 }
 
 type WPTRun struct {
-	FirstView WPTResultSet `json:"firstView" bson:"firstview"`
+	FirstView WPTResultSet `json:"firstView"`
 	//RepeatView WPTResultSet `json:"repeatView"`
 	Id int32 `json:"id"`
 }
@@ -196,12 +216,11 @@ func ProcessResult(response []byte, err error) (Result, error) {
 	}
 
 	err = json.Unmarshal(response, &jsonR)
+
 	//Handle inconsistent return from running test (where runs is a number)
 	if err != nil {
 
-		//fmt.Printf("%+v\n", err)
 		err = json.Unmarshal(response, &jsonFR)
-		//fmt.Printf("Failed conversion: %+v", jsonFR.StatusText)
 		if err != nil {
 			log.Fatal("%+v", err)
 		}
@@ -231,13 +250,25 @@ func ProcessResult(response []byte, err error) (Result, error) {
 		case float64:
 			result.Data.Plr = int32(v)
 		case nil:
+			result.Data.Plr = 1
 		default:
 			log.Printf("Failed to convert: %v", v)
 		}
 		result.Data.Completed = jsonR.Data.Completed
 		result.Data.SuccessfulFVRuns = jsonR.Data.SuccessfulFVRuns
 
-		for _, val := range jsonR.Data.Runs {
+		r, _ := regexp.Compile("^userTime.(.*)")
+		for i, val := range jsonR.Data.Runs {
+			_ = i
+
+			val.FirstView.UserTiming = make(map[string]int)
+
+			for key, extra := range val.FirstView.Extra {
+				if r.MatchString(key) && extra != nil {
+					metric := r.FindStringSubmatch(key)[1]
+					val.FirstView.UserTiming[metric] = int(extra.(float64))
+				}
+			}
 			result.Data.Runs = append(result.Data.Runs, val)
 		}
 	}

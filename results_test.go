@@ -53,6 +53,7 @@ func TestProcessResult(t *testing.T) {
 
 	if result.StatusText != "Waiting behind 1 other test..." {
 		t.Errorf("Improper parsing of waiting status text")
+		t.Errorf("Found: " + result.StatusText)
 	}
 
 	//testResultFront
@@ -93,10 +94,11 @@ func TestProcessResult(t *testing.T) {
 
 	//testResultSuccess
 	result, _ = ProcessResult(json.Marshal(testData["testResultSuccess"]))
-
+	//poop, _ := json.Marshal(testData["testResultSuccess"])
+	//t.Errorf("%+v", string(poop))
 	if result.Data.Url != "http://www.123greetings.com/birthday/happy_birthday/birthday162.html" {
 		t.Errorf("Invalid URL")
-		t.Errorf("Found: " + result.Data.Url)
+		t.Errorf("Found: %#v", result.Data.Url)
 	}
 
 	if result.Data.Summary !=
@@ -104,7 +106,9 @@ func TestProcessResult(t *testing.T) {
 		t.Errorf("Error processing Result")
 	}
 
-	if result.Data.Run[0].FirstView.TTFB != 690 {
+	if len(result.Data.Runs) < 1 {
+		t.Errorf("No runs found.")
+	} else if result.Data.Runs[0].FirstView.TTFB != 690 {
 		t.Errorf("TTFB in for first Run invalid")
 	}
 

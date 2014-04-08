@@ -11,11 +11,11 @@ import (
 )
 
 type WPTResult struct {
-	Run                        int32  `json:"run"`
-	URL                        string `json:"URL"`
-	LoadTime                   int32  `json:"loadTime"`
-	TTFB                       int32  `json:"TTFB"`
-	BytesIn                    int32
+	Run                        int32   `json:"run"`
+	URL                        string  `json:"URL"`
+	LoadTime                   int32   `json:"loadTime"`
+	TTFB                       int32   `json:"TTFB"`
+	BytesIn                    float32 `json:"bytesIn"`
 	BytesInDoc                 int32
 	BytesOut                   int32         `json:"bytesOut"`
 	BytesOutDoc                int32         `json:"bytesOutDoc"`
@@ -73,10 +73,11 @@ type WPTResult struct {
 	Date                       float64       `json:"date"`
 	SpeedIndex                 int32         `json:"SpeedIndex"`
 	VisualComplete             int32         `json:"visualComplete"`
-	UserTimeFirstOffer         int32         `json:"userTime.first_offer" bson:"first_offer"`
-	UserTimeLastOffer          int32         `json:"userTime.last_offer" bson:"last_offer"`
-	UserTimeOffers             int32         `json:"userTime.offers" bson:"offers"`
-	UserTimeJS                 int32         `json:"userTime.js" bson:"js"`
+	/*UserTimeFirstOffer         int32                  `json:"userTime.first_offer" bson:"first_offer"`
+	UserTimeLastOffer          int32                  `json:"userTime.last_offer" bson:"last_offer"`
+	UserTimeOffers             int32                  `json:"userTime.offers" bson:"offers"`
+	UserTimeJS                 int32                  `json:"userTime.js" bson:"js"`
+	Extra map[string]interface{} `json:"-" bson:",inline"`*/
 }
 
 type Pages struct {
@@ -175,7 +176,6 @@ type ResultFJSON struct {
 	StatusCode int32   `json:"statusCode"`
 	StatusText string  `json:"statusText"`
 	Completed  float64 `json:"completed"`
-	Data       WPTResultRawData
 }
 
 type Result struct {
@@ -196,9 +196,15 @@ func ProcessResult(response []byte, err error) (Result, error) {
 	}
 
 	err = json.Unmarshal(response, &jsonR)
-
+	//Handle inconsistent return from running test (where runs is a number)
 	if err != nil {
+
+		//fmt.Printf("%+v\n", err)
 		err = json.Unmarshal(response, &jsonFR)
+		//fmt.Printf("Failed conversion: %+v", jsonFR.StatusText)
+		if err != nil {
+			log.Fatal("%+v", err)
+		}
 		result.StatusCode = jsonFR.StatusCode
 		result.StatusText = jsonFR.StatusText
 	} else {
@@ -224,6 +230,7 @@ func ProcessResult(response []byte, err error) (Result, error) {
 			result.Data.Plr = int32(v)
 		case float64:
 			result.Data.Plr = int32(v)
+		case nil:
 		default:
 			log.Printf("Failed to convert: %v", v)
 		}

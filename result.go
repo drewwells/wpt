@@ -61,8 +61,8 @@ type WPTResult struct {
 	DomContentLoadedEventStart int32                  `json:"domContentLoadedEventStart"`
 	DomContentLoadedEventEnd   int32                  `json:"domContentLoadedEventEnd"`
 	LastVisualChange           int32                  `json:"lastVisualChange"`
-	Browser_name               string                 `json:"browser_name"`
-	Browser_version            string                 `json:"browser_version"`
+	Browser_Name               string                 `json:"browser_name"`
+	Browser_Version            string                 `json:"browser_version"`
 	Server_count               int32                  `json:"server_count"`
 	Server_rtt                 int32                  `json:"server_rtt"`
 	Base_page_cdn              string                 `json:"base_page_cdn"`

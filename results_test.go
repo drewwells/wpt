@@ -13,10 +13,10 @@ import (
 //const wpturl = "http://www.webpagetest.org"
 const wpturl = "http://webpagetest.eng.wsm.local"
 
-func TestGetResult(t *testing.T) {
+func TestGet(t *testing.T) {
 	//Disable to make unit testing faster
 	return
-	_, err := GetResult("http://notaurl", "140314_7Q_A")
+	_, err := Get("http://notaurl", "140314_7Q_A")
 
 	if err == nil {
 		t.Errorf("No error thrown for non-existant url")
@@ -30,7 +30,7 @@ func TestGetResult(t *testing.T) {
 
 }
 
-func TestProcessResult(t *testing.T) {
+func TestProcess(t *testing.T) {
 
 	t.Log("Processing Successful Result")
 
@@ -45,7 +45,7 @@ func TestProcessResult(t *testing.T) {
 	_ = json.Unmarshal(bytes, &testData)
 
 	//testResultWaiting
-	result, _ := ProcessResult(json.Marshal(testData["testResultWaiting"]))
+	result, _ := process(json.Marshal(testData["testResultWaiting"]))
 
 	if result.StatusCode != 101 {
 		t.Errorf("StatusCode not 101")
@@ -57,7 +57,7 @@ func TestProcessResult(t *testing.T) {
 	}
 
 	//testResultFront
-	result, _ = ProcessResult(json.Marshal(testData["testResultFront"]))
+	result, _ = process(json.Marshal(testData["testResultFront"]))
 
 	if result.StatusCode != 101 {
 		t.Errorf("StatusCode not 101")
@@ -69,7 +69,7 @@ func TestProcessResult(t *testing.T) {
 	}
 
 	//testResultRunning
-	result, _ = ProcessResult(json.Marshal(testData["testResultRunning"]))
+	result, _ = process(json.Marshal(testData["testResultRunning"]))
 
 	if result.StatusCode != 100 {
 		t.Errorf("StatusCode not 100")
@@ -81,7 +81,7 @@ func TestProcessResult(t *testing.T) {
 	}
 
 	//testResultNotFound
-	result, _ = ProcessResult(json.Marshal(testData["testResultNotFound"]))
+	result, _ = process(json.Marshal(testData["testResultNotFound"]))
 
 	if result.StatusCode != 400 {
 		t.Errorf("StatusCode not 400")
@@ -93,7 +93,7 @@ func TestProcessResult(t *testing.T) {
 	}
 
 	//testResultSuccess
-	result, _ = ProcessResult(json.Marshal(testData["testResultSuccess"]))
+	result, _ = process(json.Marshal(testData["testResultSuccess"]))
 	//poop, _ := json.Marshal(testData["testResultSuccess"])
 	//t.Errorf("%+v", string(poop))
 	if result.Data.Url != "http://www.retailmenot.test-prodpreview-new/view/macys.com" {

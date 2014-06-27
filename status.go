@@ -7,6 +7,35 @@ import (
 	"net/http"
 )
 
+func Status(url string, key string) PStatus {
+
+	res, err := http.Get(url + "/testStatus.php?test=" + key)
+	//res.Body.Close()
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	bytes, err := ioutil.ReadAll(res.Body)
+
+	return processStatus(bytes, err)
+}
+
+func processStatus(response []byte, err error) (status PStatus) {
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	err = json.Unmarshal(response, &status)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return status
+}
+
 type StatusData struct {
 	StatusCode      int32
 	StatusText      string
@@ -24,46 +53,8 @@ type StatusData struct {
 	RvRunsCompleted int32
 }
 
-type Status struct {
+type PStatus struct {
 	StatusCode int32
 	StatusText string
 	Data       StatusData
-}
-
-func ProcessStatus(response []byte, err error) (status Status) {
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	err = json.Unmarshal(response, &status)
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	return status
-}
-
-func GetStatus(url string, key string) (status Status) {
-
-	res, err := http.Get(url + "/testStatus.php?test=" + key)
-	//res.Body.Close()
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	bytes, err := ioutil.ReadAll(res.Body)
-
-	status = ProcessStatus(bytes, err)
-
-	//loc, _ := time.LoadLocation("America/Chicago")
-	//layout := "01/02/40 10:01:01"
-	//status.Data.PCompleteTime, err =
-	//	time.ParseInLocation(layout, status.Data.CompleteTime, loc)
-	//if err != nil {
-	//	log.Fatal(err)
-	//}
-	return
 }

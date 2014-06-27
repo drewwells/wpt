@@ -21,7 +21,7 @@ func TestGetStatus(t *testing.T) {
 
 	_ = json.Unmarshal(bytes, &testData)
 
-	status := ProcessStatus(json.Marshal(testData["testStatusComplete"]))
+	status := processStatus(json.Marshal(testData["testStatusComplete"]))
 	t.Log("Checking status of Completed Test")
 
 	if status.StatusCode != 200 {
@@ -31,7 +31,7 @@ func TestGetStatus(t *testing.T) {
 		t.Errorf("StatusText not 'Text Complete'")
 	}
 
-	status = ProcessStatus(json.Marshal(testData["testStatusPending"]))
+	status = processStatus(json.Marshal(testData["testStatusPending"]))
 	t.Log("Checking status of Pending Test")
 	if status.StatusCode != 101 {
 		t.Errorf("StatusCode not 101")
@@ -40,7 +40,7 @@ func TestGetStatus(t *testing.T) {
 		t.Errorf("StatusText not 'Text Pending'")
 	}
 
-	status = ProcessStatus(json.Marshal(testData["testStatusRunning"]))
+	status = processStatus(json.Marshal(testData["testStatusRunning"]))
 	t.Log("Checking status of Running Test")
 	if status.StatusCode != 100 {
 		t.Errorf("StatusCode not 100")
@@ -51,7 +51,7 @@ func TestGetStatus(t *testing.T) {
 	}
 
 	t.Log("Checking status of invalid TestID")
-	status = ProcessStatus(json.Marshal(testData["testStatusNotFound"]))
+	status = processStatus(json.Marshal(testData["testStatusNotFound"]))
 
 	if status.StatusCode != 400 {
 		t.Errorf("StatusCode not 400")

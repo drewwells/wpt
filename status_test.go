@@ -16,7 +16,7 @@ func TestGetStatus(t *testing.T) {
 	bytes, err := ioutil.ReadFile("./test/status.json")
 
 	if err != nil {
-		t.Errorf("%v", err)
+		t.Errorf(err.Error())
 	}
 
 	_ = json.Unmarshal(bytes, &testData)

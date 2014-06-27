@@ -21,6 +21,7 @@ func TestGet(t *testing.T) {
 	if err == nil {
 		t.Errorf("No error thrown for non-existant url")
 		return
+
 	}
 	re, _ := regexp.Compile(`dial tcp`)
 
@@ -30,18 +31,14 @@ func TestGet(t *testing.T) {
 
 }
 
-func TestProcess(t *testing.T) {
-
-	t.Log("Processing Successful Result")
+func TestPending(t *testing.T) {
 
 	var testData map[string]interface{}
-
 	bytes, err := ioutil.ReadFile("./test/result.json")
 
 	if err != nil {
-		t.Errorf("%v", err)
+		t.Errorf(err.Error())
 	}
-
 	_ = json.Unmarshal(bytes, &testData)
 
 	//testResultWaiting
@@ -58,7 +55,6 @@ func TestProcess(t *testing.T) {
 
 	//testResultFront
 	result, _ = process(json.Marshal(testData["testResultFront"]))
-
 	if result.StatusCode != 101 {
 		t.Errorf("StatusCode not 101")
 	}
@@ -80,8 +76,24 @@ func TestProcess(t *testing.T) {
 		t.Errorf("Found: " + result.StatusText)
 	}
 
+}
+
+func TestProcess(t *testing.T) {
+
+	t.Log("Processing Successful Result")
+
+	var testData map[string]interface{}
+
+	bytes, err := ioutil.ReadFile("./test/result.json")
+
+	if err != nil {
+		t.Errorf("%v", err)
+	}
+
+	_ = json.Unmarshal(bytes, &testData)
+
 	//testResultNotFound
-	result, _ = process(json.Marshal(testData["testResultNotFound"]))
+	result, _ := process(json.Marshal(testData["testResultNotFound"]))
 
 	if result.StatusCode != 400 {
 		t.Errorf("StatusCode not 400")

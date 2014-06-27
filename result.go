@@ -48,29 +48,32 @@ func Get(url string, key string) (Response, error) {
 // Handles inconsistencies in the WebPageTest API
 func process(response []byte, err error) (Response, error) {
 	var (
-		jsonR  encode.ResultJSON
+		jsonR  encode.JResult
 		result Response
-		jsonFR encode.ResultFJSON
+		status int
 	)
 
 	if err != nil {
 		return result, err
 	}
 
-	err = json.Unmarshal(response, &jsonR)
-	//Handle inconsistent return from running test
-	// (where runs is a number)
-	if err != nil {
+	var objmap map[string]*json.RawMessage
+	err = json.Unmarshal(response, &objmap)
 
-		err = json.Unmarshal(response, &jsonFR)
-		if err != nil {
-			log.Fatal(err)
-		}
-		result.StatusCode = jsonFR.StatusCode
-		result.StatusText = jsonFR.StatusText
-		return result, err
+	err = json.Unmarshal(*objmap["statusCode"], &status)
 
+	if status != 200 {
+		var r Response
+		_ = json.Unmarshal(*objmap["statusCode"], &r.StatusCode)
+		_ = json.Unmarshal(*objmap["statusText"], &r.StatusText)
+		return r, err
 	}
+
+	err = json.Unmarshal(response, &jsonR)
+	if err != nil {
+		return Response{}, err
+	}
+
 	//Lots of work to convert {"0":{},"1":{}} to [{},{}]
 	result.StatusCode = jsonR.StatusCode
 	result.StatusText = jsonR.StatusText

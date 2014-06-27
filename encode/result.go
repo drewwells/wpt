@@ -9,8 +9,8 @@ import (
 
 type R struct {
 	rbase `bson:",inline"`
-	Plr   int32    `bson:",minsize"`
-	Runs  []WPTRun `json:"runs" bson:"runs"`
+	Plr   int32  `bson:",minsize"`
+	Runs  []rrun `json:"runs" bson:"runs"`
 }
 
 type rbase struct {
@@ -136,13 +136,6 @@ type Images struct {
 	ConnectionView string `json:"connectionView"`
 }
 
-type RawData struct {
-	Headers      string `json:"headers"`
-	PageData     string `json:"pageData"`
-	RequestsData string `json:"requestsData"`
-	Utilization  string `json:"utilization"`
-}
-
 type VideoFrame struct {
 	Time             int32  `json:"time"`
 	Image            string `json:"image"`
@@ -154,7 +147,7 @@ type PResultSet struct {
 	Pages       Pages        `json:"pages"`
 	Thumbnails  Thumbnails   `json:"thumbnails"`
 	Images      Images       `json:"images"`
-	RawData     RawData      `json:"rawData"`
+	RawData     rawdata      `json:"rawData"`
 	VideoFrames []VideoFrame `json:"videoFrames"`
 }
 
@@ -163,31 +156,31 @@ type Views struct {
 	RepeatView PResult //`json:"repeatView"`
 }
 
-type WPTRun struct {
+type rrun struct {
 	FirstView PResultSet `json:"firstView"`
 	//RepeatView PResultSet `json:"repeatView"`
 	Id int32 `json:"id"`
 }
 
-type PResultRawData struct {
+type rawdata struct {
+	Headers      string `json:"headers"`
+	PageData     string `json:"pageData"`
+	RequestsData string `json:"requestsData"`
+	Utilization  string `json:"utilization"`
+}
+
+type rrrun struct {
 	rbase
 	TestId     string `json:"id"`
 	StatusCode int32
 	StatusText string
-	Plr        interface{}       `json:"plr"`
-	Runs       map[string]WPTRun `json:"runs"`
+	Plr        interface{}     `json:"plr"`
+	Runs       map[string]rrun `json:"runs"`
 }
 
-type ResultJSON struct {
-	StatusCode int32          `json:"statusCode"`
-	StatusText string         `json:"statusText"`
-	Completed  float64        `json:"completed"`
-	Data       PResultRawData `json:"data" bson:"data"`
-}
-
-//Special struct to handle unstructured wpt responses
-type ResultFJSON struct {
+type JResult struct {
 	StatusCode int32   `json:"statusCode"`
 	StatusText string  `json:"statusText"`
 	Completed  float64 `json:"completed"`
+	Data       rrrun   `json:"data" bson:"data"`
 }

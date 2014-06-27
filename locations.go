@@ -16,15 +16,17 @@ type Location struct {
 	RelayServer   string
 }
 
-type WebPageTestLocations struct {
+type PLocations struct {
 	StatusCode int32
 	StatusText string
 	Data       map[string]Location
 }
 
-func GetLocations(wpturl string) (location WebPageTestLocations) {
+// Locations queries WebPageTest for information about the
+// current available browsers.
+func Locations(wpturl string) (location PLocations) {
 
-	res, err := http.Get(wpturl)
+	res, err := http.Get(wpturl + "/getLocations.php?f=json")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -33,6 +35,10 @@ func GetLocations(wpturl string) (location WebPageTestLocations) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	_ = json.Unmarshal(robots, &location)
-	return
+	err = json.Unmarshal(robots, &location)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+	return location
 }

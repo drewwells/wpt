@@ -7,6 +7,8 @@ import (
 	"net/http"
 )
 
+// Status reports what the current state of a test run is.
+// This can be completed, pending, front of queue, running
 func Status(url string, key string) PStatus {
 
 	res, err := http.Get(url + "/testStatus.php?test=" + key)
@@ -36,7 +38,7 @@ func processStatus(response []byte, err error) (status PStatus) {
 	return status
 }
 
-type StatusData struct {
+type statusData struct {
 	StatusCode      int32
 	StatusText      string
 	TestId          string
@@ -56,5 +58,5 @@ type StatusData struct {
 type PStatus struct {
 	StatusCode int32
 	StatusText string
-	Data       StatusData
+	Data       statusData
 }

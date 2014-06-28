@@ -11,7 +11,7 @@ import (
 type jloc struct {
 	Browser       string
 	Label         string `json:"label"`
-	PendingTests  map[string]int32
+	PendingTests  map[string]int
 	Location      string
 	RelayLocation string
 	RelayServer   string
@@ -29,8 +29,8 @@ type Location struct {
 	Label   string
 
 	Busy    bool
-	Total   int32
-	Testing int32
+	Total   int
+	Testing int
 }
 
 // Locations queries WebPageTest for information about the
@@ -77,7 +77,7 @@ func processLoc(bs []byte) ([]Location, error) {
 		locs[i].Label = vv.Label
 		locs[i].Total = vv.PendingTests["Total"]
 		locs[i].Testing = vv.PendingTests["Testing"]
-		locs[i].Busy = vv.PendingTests["Idle"] != 1
+		locs[i].Busy = vv.PendingTests["Idle"] != 0
 	}
 
 	return locs, err

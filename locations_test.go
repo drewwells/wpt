@@ -3,53 +3,44 @@ package wpt
 import (
 	"io/ioutil"
 	"testing"
+	. "gopkg.in/check.v1"
 )
 
-func TestLocations(t *testing.T) {
+// Hook up gocheck into the "go test" runner.
+func Test(t *testing.T) { TestingT(t) }
 
-	//Reading Test Data
+var _ = Suite(&MySuite{})
 
-	bytes, err := ioutil.ReadFile("./test/location.json")
+type MySuite struct {
+	bytes []byte
+	locs  []Location
+}
+
+func (s *MySuite) SetUpTest(c *C) {
+
+	var err error
+
+	s.bytes, err = ioutil.ReadFile("./test/location.json")
 
 	if err != nil {
-		t.Errorf(err.Error())
+		c.Log(err.Error())
 	}
 
-	locs, err := processLoc(bytes)
+	s.locs, err = processLoc(s.bytes)
 	if err != nil {
-		t.Errorf("%v", err)
+		c.Log(err.Error())
 	}
+}
 
-	if locs[0].Name != "wpt-001" {
-		t.Errorf("Name did not match")
-	}
+func (s *MySuite) TestLocations(c *C) {
+	loc0 := s.locs[0]
 
-	if locs[0].Browser != "Chrome" {
-		t.Errorf("Browser did not match")
-	}
-
-	if locs[0].Label != "uswest - Agent 001" {
-		t.Errorf("Label did not match")
-	}
-
-	if locs[0].Total != 1 {
-		t.Errorf("Total did not match")
-	}
-
-	if locs[0].Testing != 1 {
-		t.Errorf("Testing did not match")
-	}
-
-	if !locs[0].Busy {
-		t.Errorf("Busy is wrong")
-	}
-
-	if locs[4].Name != "wpt-002" {
-		t.Errorf("Name did not match")
-	}
-
-	if locs[4].Busy {
-		t.Errorf("Idle agent is wrong")
-	}
-
+	c.Assert(loc0.Name, Equals, "wpt-001")
+	c.Assert(loc0.Browser, Equals, "Chrome")
+	c.Assert(loc0.Label, Equals, "uswest - Agent 001")
+	c.Assert(loc0.Total, Equals, 1)
+	c.Assert(loc0.Testing, Equals, 1)
+	c.Assert(loc0.Busy, Equals, false)
+	c.Assert(s.locs[4].Name, Equals, "wpt-002")
+	c.Assert(s.locs[4].Busy, Equals, true)
 }

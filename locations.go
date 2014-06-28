@@ -5,8 +5,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
-
-	"github.com/kr/pretty"
+	"sort"
 )
 
 type jloc struct {
@@ -54,26 +53,32 @@ func Locations(url string) ([]Location, error) {
 
 func processLoc(bs []byte) ([]Location, error) {
 
-	var jlocs jlocs
+	var jls jlocs
 
-	err := json.Unmarshal(bs, &jlocs)
+	err := json.Unmarshal(bs, &jls)
 
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	locs := make([]Location, len(jlocs.Data))
+	keys := make(sort.StringSlice, len(jls.Data))
 	i := 0
-	for _, v := range jlocs.Data {
-		locs[i].Name = v.Location
-		locs[i].Browser = v.Browser
-		locs[i].Label = v.Label
-		locs[i].Total = v.PendingTests["Total"]
-		locs[i].Testing = v.PendingTests["Testing"]
-		locs[i].Busy = v.PendingTests["Idle"] != 1
+	for j, _ := range jls.Data {
+		keys[i] = j
 		i = i + 1
 	}
-	pretty.Println(locs)
-	return locs, err
 
+	keys.Sort()
+	locs := make([]Location, len(jls.Data))
+	for i, v := range keys {
+		vv := jls.Data[v]
+		locs[i].Name = vv.Location
+		locs[i].Browser = vv.Browser
+		locs[i].Label = vv.Label
+		locs[i].Total = vv.PendingTests["Total"]
+		locs[i].Testing = vv.PendingTests["Testing"]
+		locs[i].Busy = vv.PendingTests["Idle"] != 1
+	}
+
+	return locs, err
 }

@@ -83,6 +83,7 @@ func process(response []byte, err error) (Response, error) {
 	result.Data.Url = jsonR.Data.Url
 	result.Data.Location = jsonR.Data.Location
 	result.Data.Connectivity = jsonR.Data.Connectivity
+	result.Data.From = jsonR.Data.From
 	result.Data.BwDown = jsonR.Data.BwDown
 	result.Data.BwUp = jsonR.Data.BwUp
 	result.Data.Latency = jsonR.Data.Latency

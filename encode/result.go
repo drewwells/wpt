@@ -18,7 +18,7 @@ type rbase struct {
 	TestId           string  `json:"testId" bson:"testid"`
 	Summary          string  `json:"summary"`
 	Location         string  `json:"location"`
-	From             string  `json:"from"`
+	From             string  `json:"from" bson:"from"`
 	Label            string  `json:"label" bson:"label"`
 	Connectivity     string  `json:"connectivity"`
 	BwDown           int32   `json:"bwDown"`

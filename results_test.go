@@ -117,6 +117,19 @@ func TestProcess(t *testing.T) {
 		t.Errorf("Invalid summary link\n")
 		t.Errorf("Found: %v Expected: %v", result.Data.Summary, expectedSummary)
 	}
+	conn := "DSL"
+	if result.Data.Connectivity != conn {
+		t.Errorf("Invalid From string\n")
+		t.Errorf("\nFound: %s\nExpected: %s",
+			result.Data.Connectivity,
+			conn,
+		)
+	}
+	from := " - <b>Chrome</b> - <b>DSL</b>"
+	if result.Data.From != from {
+		t.Errorf("Invalid From string\n")
+		t.Errorf("\nFound: %s\nExpected: %s", result.Data.From, from)
+	}
 	expFirstOffer := 3615
 	extra := result.Data.Runs[0].FirstView.Extra
 	if len(result.Data.Runs) < 1 {
